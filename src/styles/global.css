@@ -16,8 +16,8 @@
 }
 
 :focus {
-  outline: transparent !important;
-  box-shadow: 0 0 0 2px var(--green-500) !important;
+  outline: transparent;
+  box-shadow: 0 0 0 2px var(--green-500);
 }
 
 * {
