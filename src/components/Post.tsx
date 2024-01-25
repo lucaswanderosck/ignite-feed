@@ -1,25 +1,47 @@
 /* eslint-disable react/prop-types */
 import { format, formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { useState } from "react";
+import { ChangeEvent, FormEvent, InvalidEvent, useState } from "react";
 import { Avatar } from "./Avatar";
 import { Comment } from "./Comment";
 import styles from "./Post.module.css";
 
-export const Post = ({ author, publishedAt, content }) => {
+interface Author {
+  avatarUrl: string;
+  name: string;
+  role: string;
+}
+
+interface Content {
+  type: "paragraph" | "link";
+  content: string;
+}
+
+export interface PostType {
+  id: number;
+  author: Author;
+  publishedAt: Date;
+  content: Content[];
+}
+
+interface PostProps {
+  post: PostType;
+}
+
+export const Post = ({ post }: PostProps) => {
   const [comments, setComments] = useState(["Muito Bom!"]);
   const [newCommentText, setNewCommentText] = useState("");
 
-  const formattedDate = format(publishedAt, "d 'de' LLLL 'às' HH:mm'h'", {
+  const formattedDate = format(post.publishedAt, "d 'de' LLLL 'às' HH:mm'h'", {
     locale: ptBR,
   });
 
-  const relativeDateToNow = formatDistanceToNow(publishedAt, {
+  const relativeDateToNow = formatDistanceToNow(post.publishedAt, {
     locale: ptBR,
     addSuffix: true,
   });
 
-  const handleCreateNewComment = (event) => {
+  const handleCreateNewComment = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     setComments([...comments, newCommentText]);
@@ -27,19 +49,19 @@ export const Post = ({ author, publishedAt, content }) => {
     setNewCommentText("");
   };
 
-  const handleNewCommentChange = (event) => {
+  const handleNewCommentChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
     event.target.setCustomValidity("");
     setNewCommentText(event.target.value);
   };
 
-  const deleteComment = (comment) => {
+  const deleteComment = (comment: string) => {
     const commentsWithoutDeleteOne = comments.filter(
       (item) => item !== comment
     );
     setComments(commentsWithoutDeleteOne);
   };
 
-  const handleCommentInvalid = (event) => {
+  const handleCommentInvalid = (event: InvalidEvent<HTMLTextAreaElement>) => {
     event.target.setCustomValidity("Por favor, escreva um comentário");
   };
 
@@ -49,18 +71,18 @@ export const Post = ({ author, publishedAt, content }) => {
     <article className={styles.post}>
       <header>
         <div className={styles.author}>
-          <Avatar src={author.avatarUrl} alt="" />
+          <Avatar src={post.author.avatarUrl} />
           <div className={styles.authorInfo}>
-            <strong>{author.name}</strong>
-            <span>{author.role}</span>
+            <strong>{post.author.name}</strong>
+            <span>{post.author.role}</span>
           </div>
         </div>
-        <time title={formattedDate} dateTime={publishedAt.toISOString()}>
+        <time title={formattedDate} dateTime={post.publishedAt.toISOString()}>
           {relativeDateToNow}
         </time>
       </header>
       <div className={styles.content}>
-        {content.map((item, index) => {
+        {post.content.map((item, index) => {
           if (item.type === "paragraph") {
             return <p key={index}>{item.content}</p>;
           } else if (item.type === "link") {

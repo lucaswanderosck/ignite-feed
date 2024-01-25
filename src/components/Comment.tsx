@@ -5,7 +5,12 @@ import avatar2 from "../assets/images/avatar2.png";
 import { Avatar } from "./Avatar";
 import styles from "./Comment.module.css";
 
-export const Comment = ({ content, OnDeleteComment }) => {
+interface Props {
+  content: string;
+  OnDeleteComment: (comment: string) => void;
+}
+
+export const Comment = ({ content, OnDeleteComment }: Props) => {
   const [likesCount, setLikesCount] = useState(0);
 
   const handleLikeClick = () => {
@@ -17,7 +22,7 @@ export const Comment = ({ content, OnDeleteComment }) => {
   };
   return (
     <div className={styles.comment}>
-      <Avatar src={avatar2} alt="" />
+      <Avatar src={avatar2} />
       <div className={styles.commentBox}>
         <div className={styles.commentContent}>
           <header>
